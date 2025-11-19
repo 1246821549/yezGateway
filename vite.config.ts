@@ -36,7 +36,7 @@ export default ({ mode }: ConfigEnv): UserConfigExport => {
       proxy: {
         "/api": {
           // 这里填写后端地址
-          target: "http://121.41.176.13:8001",
+          target: "http://api.ranxun168.com",
           changeOrigin: true
         }
       },
