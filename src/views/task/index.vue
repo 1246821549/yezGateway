@@ -3,7 +3,7 @@
  * @Author: 程前
  * @Date: 2025-07-24 09:33:25
  * @LastEditors: 程前
- * @LastEditTime: 2025-07-24 10:41:24
+ * @LastEditTime: 2025-11-24 18:17:13
 -->
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted } from "vue";
@@ -26,6 +26,9 @@ import OrderDetailModal from "@/components/OrderDetailModal/index.vue";
 import UploadDraftModal from "@/components/UploadDraftModal/index.vue";
 import UploadFinalDraftModal from "@/components/UploadFinalDraftModal/index.vue";
 import DisclaimerModal from "@/components/DisclaimerModal/index.vue";
+import SearchForm, {
+  type SearchFieldConfig
+} from "@/components/SearchForm/index.vue";
 
 defineOptions({
   name: "taskList"
@@ -43,8 +46,46 @@ const searchForm = reactive({
   endTime: "", // 结束时间
   orderNumber: "", // 订单编号
   keyword: "", // 关键词
-  dateRange: [] // 时间周期
+  dateRange: [] as any[] // 时间周期
 });
+
+// 搜索表单配置
+const searchFields: SearchFieldConfig[] = [
+  {
+    type: "input",
+    field: "orderNumber",
+    label: "订单编号",
+    placeholder: "输入订单编号",
+    width: "w-80"
+  },
+  {
+    type: "input",
+    field: "keyword",
+    label: "沟通群名",
+    placeholder: "输入沟通群名",
+    width: "w-80"
+  },
+  {
+    type: "date-range",
+    field: "dateRange",
+    label: "时间周期",
+    width: "300px"
+  },
+  {
+    type: "checkbox",
+    field: "isCG_YQ",
+    label: "初稿逾期",
+    trueValue: 1,
+    falseValue: undefined
+  },
+  {
+    type: "checkbox",
+    field: "isZG_YQ",
+    label: "终稿逾期",
+    trueValue: 1,
+    falseValue: undefined
+  }
+];
 
 // 状态统计
 const statusStats = reactive({
@@ -537,55 +578,59 @@ onMounted(() => {
 <template>
   <div class="p-6 bg-gray-50 min-h-screen">
     <!-- 搜索区域 -->
-    <div class="bg-white p-6 rounded-lg shadow-sm mb-6">
-      <el-form :model="searchForm" :inline="true" class="search-form">
-        <el-form-item label="订单编号" class="w-52">
-          <el-input
-            v-model="searchForm.orderNumber"
-            placeholder="输入订单编号"
-            clearable
-          />
-        </el-form-item>
+    <div class="bg-white p-6 rounded-lg shadow-sm mb-6 w-full">
+      <div class="flex flex-wrap gap-3 items-center justify-between">
+        <div class="flex flex-wrap gap-3 items-center">
+          <div class="flex items-center gap-2">
+            <span class="text-sm font-medium text-gray-700">订单编号</span>
+            <el-input
+              v-model="searchForm.orderNumber"
+              placeholder="输入订单编号"
+              clearable
+              style="width: 250px"
+            />
+          </div>
 
-        <el-form-item label="沟通群名" class="w-52">
-          <el-input
-            v-model="searchForm.keyword"
-            placeholder="输入沟通群名"
-            clearable
-          />
-        </el-form-item>
+          <div class="flex items-center gap-2">
+            <span class="text-sm font-medium text-gray-700">沟通群名</span>
+            <el-input
+              v-model="searchForm.keyword"
+              placeholder="输入沟通群名"
+              clearable
+              style="width: 200px"
+            />
+          </div>
 
-        <el-form-item class="w-64" label="时间周期">
-          <el-date-picker
-            v-model="searchForm.dateRange"
-            type="daterange"
-            range-separator="至"
-            start-placeholder="年/月/日"
-            end-placeholder="年/月/日"
-            format="YYYY/MM/DD"
-            value-format="YYYY-MM-DD"
-          />
-        </el-form-item>
+          <div class="flex items-center gap-2">
+            <span class="text-sm font-medium text-gray-700">时间周期</span>
+            <el-date-picker
+              v-model="searchForm.dateRange"
+              type="daterange"
+              range-separator="至"
+              start-placeholder="年/月/日"
+              end-placeholder="年/月/日"
+              format="YYYY/MM/DD"
+              value-format="YYYY-MM-DD"
+              style="width: 384px"
+            />
+          </div>
 
-        <el-form-item>
           <el-checkbox
             v-model="searchForm.isCG_YQ"
             :true-value="1"
             :false-value="undefined"
             label="初稿逾期"
           />
-        </el-form-item>
 
-        <el-form-item>
           <el-checkbox
             v-model="searchForm.isZG_YQ"
             :true-value="1"
             :false-value="undefined"
             label="终稿逾期"
           />
-        </el-form-item>
+        </div>
 
-        <el-form-item>
+        <div class="flex gap-2">
           <el-button
             type="primary"
             :icon="Search"
@@ -595,15 +640,9 @@ onMounted(() => {
           >
             搜索
           </el-button>
-          <el-button
-            style="margin-left: 12px"
-            :icon="Refresh"
-            @click="handleReset"
-          >
-            重置
-          </el-button>
-        </el-form-item>
-      </el-form>
+          <el-button :icon="Refresh" @click="handleReset"> 重置 </el-button>
+        </div>
+      </div>
     </div>
 
     <!-- 状态标签栏 -->

@@ -3,7 +3,7 @@
  * @Author: 程前
  * @Date: 2025-07-24 09:34:15
  * @LastEditors: 程前
- * @LastEditTime: 2025-07-24 09:51:55
+ * @LastEditTime: 2025-11-24 18:18:38
 -->
 <script setup lang="ts">
 import { ref, reactive, onMounted } from "vue";
@@ -13,6 +13,9 @@ import {
   getExemptionHistoryList,
   type ExemptionHistoryItem
 } from "@/api/order";
+import SearchForm, {
+  type SearchFieldConfig
+} from "@/components/SearchForm/index.vue";
 
 defineOptions({
   name: "recordList"
@@ -21,7 +24,7 @@ defineOptions({
 // 搜索表单数据
 const searchForm = reactive({
   orderNumber: "", // 订单编号
-  dateRange: [], // 时间范围
+  dateRange: [] as any[], // 时间范围
   exemptionType: "", // 免责类型
   approvalStatus: "" // 申核状态
 });
@@ -42,6 +45,39 @@ const approvalStatusOptions = [
   { label: "未处理", value: 0 },
   { label: "已处理", value: 1 },
   { label: "已拒绝", value: 2 }
+];
+
+// 搜索表单配置
+const searchFields: SearchFieldConfig[] = [
+  {
+    type: "input",
+    field: "orderNumber",
+    label: "订单编号",
+    placeholder: "输入订单编号",
+    width: "w-80"
+  },
+  {
+    type: "date-range",
+    field: "dateRange",
+    label: "时间周期",
+    width: "w-96"
+  },
+  {
+    type: "select",
+    field: "exemptionType",
+    label: "免责类型",
+    placeholder: "请选择",
+    options: exemptionTypeOptions,
+    width: "w-64"
+  },
+  {
+    type: "select",
+    field: "approvalStatus",
+    label: "申核状态",
+    placeholder: "请选择",
+    options: approvalStatusOptions,
+    width: "w-64"
+  }
 ];
 
 // 分页信息
@@ -228,17 +264,19 @@ const copyOrderNumber = async (orderNumber: string) => {
   <div class="p-6 bg-gray-50 min-h-screen">
     <!-- 搜索区域 -->
     <div class="bg-white p-6 rounded-lg shadow-sm mb-6">
-      <el-form :model="searchForm" :inline="true" class="search-form">
-        <el-form-item label="订单编号">
+      <div class="flex flex-wrap gap-4 items-center">
+        <div class="flex items-center gap-2">
+          <span class="text-sm font-medium text-gray-700">订单编号</span>
           <el-input
             v-model="searchForm.orderNumber"
             placeholder="输入订单编号"
             clearable
-            class="w-48"
+            style="width: 320px"
           />
-        </el-form-item>
+        </div>
 
-        <el-form-item label="时间周期">
+        <div class="flex items-center gap-2">
+          <span class="text-sm font-medium text-gray-700">时间周期</span>
           <el-date-picker
             v-model="searchForm.dateRange"
             type="daterange"
@@ -247,15 +285,17 @@ const copyOrderNumber = async (orderNumber: string) => {
             end-placeholder="年/月/日"
             format="YYYY/MM/DD"
             value-format="YYYY-MM-DD"
-            class="w-64"
+            style="width: 384px"
           />
-        </el-form-item>
+        </div>
 
-        <el-form-item label="免责类型">
+        <div class="flex items-center gap-2">
+          <span class="text-sm font-medium text-gray-700">免责类型</span>
           <el-select
             v-model="searchForm.exemptionType"
             placeholder="请选择"
             clearable
+            style="width: 200px"
           >
             <el-option
               v-for="item in exemptionTypeOptions"
@@ -264,13 +304,15 @@ const copyOrderNumber = async (orderNumber: string) => {
               :value="item.value"
             />
           </el-select>
-        </el-form-item>
+        </div>
 
-        <el-form-item label="申核状态">
+        <div class="flex items-center gap-2">
+          <span class="text-sm font-medium text-gray-700">申核状态</span>
           <el-select
             v-model="searchForm.approvalStatus"
             placeholder="请选择"
             clearable
+            style="width: 200px"
           >
             <el-option
               v-for="item in approvalStatusOptions"
@@ -279,9 +321,9 @@ const copyOrderNumber = async (orderNumber: string) => {
               :value="item.value"
             />
           </el-select>
-        </el-form-item>
+        </div>
 
-        <el-form-item>
+        <div>
           <el-button
             type="primary"
             :icon="Search"
@@ -294,8 +336,8 @@ const copyOrderNumber = async (orderNumber: string) => {
           <el-button :icon="Refresh" class="ml-2" @click="handleReset">
             重置
           </el-button>
-        </el-form-item>
-      </el-form>
+        </div>
+      </div>
     </div>
 
     <!-- 表格区域 -->
