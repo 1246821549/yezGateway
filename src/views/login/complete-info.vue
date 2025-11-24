@@ -509,7 +509,7 @@ const rules = reactive({
                   class="w-full"
                   :props="{
                     label: 'name',
-                    value: 'value',
+                    value: 'id',
                     children: 'childrens'
                   }"
                 >
@@ -558,19 +558,6 @@ const rules = reactive({
 
               <!-- 擅长产品 -->
               <el-form-item label="擅长产品(可多选)" class="full-width">
-                <!-- <el-select
-                  v-model="formData.skillProducts"
-                  multiple
-                  placeholder="请选择"
-                  class="w-full"
-                >
-                  <el-option
-                    v-for="item in options.skillProducts"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                  />
-                </el-select> -->
                 <el-tree-select
                   v-model="formData.specialty_shop"
                   :data="options.skillProducts"
