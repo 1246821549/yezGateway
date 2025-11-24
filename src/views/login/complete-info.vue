@@ -46,13 +46,13 @@ const registeCodeInfo = reactive<RegisterInfo>({
 onMounted(() => {
   const tempInfo = JSON.parse(sessionStorage.getItem("registerinfo"));
   console.log(tempInfo, "tempInfo");
-  if (tempInfo && tempInfo.userName) {
-    Object.assign(registeCodeInfo, tempInfo);
-    formData.value.phone = registeCodeInfo.userName;
-  } else {
-    message("手机号未找到，请返回注册页面重新注册", { type: "error" });
-    return router.push("/register");
-  }
+  // if (tempInfo && tempInfo.userName) {
+  //   Object.assign(registeCodeInfo, tempInfo);
+  //   formData.value.phone = registeCodeInfo.userName;
+  // } else {
+  //   message("手机号未找到，请返回注册页面重新注册", { type: "error" });
+  //   return router.push("/register");
+  // }
   getDesignerList();
   handleDicttData();
 });
@@ -228,6 +228,7 @@ const handleDicttData = async () => {
     }));
     // 获取擅长产品
     const skillProducts = await getProductList();
+    console.log(skillProducts, "skillProducts");
     options.skillProducts = skillProducts.result;
   } catch (error) {
     console.error("获取字典数据异常", error);
@@ -578,7 +579,7 @@ const rules = reactive({
                   class="w-full"
                   :props="{
                     label: 'name',
-                    value: 'value',
+                    value: 'id',
                     children: 'childrens'
                   }"
                 />

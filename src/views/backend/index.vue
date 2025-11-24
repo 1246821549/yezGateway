@@ -317,7 +317,7 @@
     <!-- 充值弹框 -->
     <RechargeDialog
       v-model:visible="showRechargeDialog"
-      current-balance="1.00"
+      :current-balance="userAmount.userBalance"
       @confirm="handleRechargeConfirm"
     />
     <!-- 充值二维码弹框 -->

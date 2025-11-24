@@ -3,7 +3,7 @@
  * @Author: 程前
  * @Date: 2025-10-27 09:15:30
  * @LastEditors: 程前
- * @LastEditTime: 2025-10-30 16:42:18
+ * @LastEditTime: 2025-11-24 17:22:13
 -->
 <script setup lang="ts">
 import { ref, watch } from "vue";
@@ -17,7 +17,7 @@ interface RechargeForm {
 
 interface Props {
   visible: boolean;
-  currentBalance?: string;
+  currentBalance?: number;
 }
 
 interface Emits {
@@ -26,7 +26,7 @@ interface Emits {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  currentBalance: "1.00"
+  currentBalance: 0
 });
 
 const emit = defineEmits<Emits>();
@@ -34,7 +34,7 @@ const emit = defineEmits<Emits>();
 const rechargeForm = ref<RechargeForm>({
   money: null,
   accountType: 1,
-  paymentMethod: "wechat"
+  paymentMethod: "alipay"
 });
 
 // 监听弹框显示状态，重置表单
@@ -52,7 +52,7 @@ const resetForm = () => {
   rechargeForm.value = {
     money: null,
     accountType: 1,
-    paymentMethod: "wechat"
+    paymentMethod: "alipay"
   };
 };
 
@@ -149,13 +149,7 @@ const handleRecharge = () => {
         <div class="text-gray-700 mb-3">付款方式:</div>
         <div class="flex gap-3">
           <button
-            :class="[
-              'flex-1 h-12 rounded border-2 flex items-center justify-center gap-2 transition-colors',
-              rechargeForm.paymentMethod === 'alipay'
-                ? 'border-blue-400 bg-blue-50'
-                : 'border-gray-200 bg-gray-100'
-            ]"
-            @click="rechargeForm.paymentMethod = 'alipay'"
+            class="flex-1 h-12 rounded border-2 flex items-center justify-center gap-2 transition-colors border-blue-400 bg-blue-50 cursor-default"
           >
             <div
               class="w-6 h-6 bg-blue-500 rounded flex items-center justify-center text-white text-xs"
@@ -163,22 +157,6 @@ const handleRecharge = () => {
               支
             </div>
             <span class="text-gray-600">支付宝</span>
-          </button>
-          <button
-            :class="[
-              'flex-1 h-12 rounded border-2 flex items-center justify-center gap-2 transition-colors',
-              rechargeForm.paymentMethod === 'wechat'
-                ? 'border-green-400 bg-green-50'
-                : 'border-gray-200 bg-gray-100'
-            ]"
-            @click="rechargeForm.paymentMethod = 'wechat'"
-          >
-            <div
-              class="w-6 h-6 bg-green-500 rounded flex items-center justify-center text-white text-xs"
-            >
-              微
-            </div>
-            <span class="text-gray-600">微信</span>
           </button>
         </div>
       </div>

@@ -128,7 +128,7 @@ router.beforeEach((to: ToRouteType, _from, next) => {
   }
   const userInfo = storageLocal().getItem<DataInfo<number>>(userKey);
   NProgress.start();
-  
+
   /** 处理根路径访问：已登录跳转到 /backend/index，未登录跳转到 /index */
   if (to.path === "/" || to.path === "/welcome") {
     if (Cookies.get(multipleTabsKey) && userInfo) {
@@ -137,11 +137,11 @@ router.beforeEach((to: ToRouteType, _from, next) => {
       return;
     } else {
       // 未登录，跳转到门户首页
-      next({ path: "/index" });
+      next({ path: "/login" });
       return;
     }
   }
-  
+
   const externalLink = isUrl(to?.name as string);
   if (!externalLink) {
     to.matched.some(item => {
