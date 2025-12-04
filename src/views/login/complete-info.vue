@@ -46,13 +46,13 @@ const registeCodeInfo = reactive<RegisterInfo>({
 onMounted(() => {
   const tempInfo = JSON.parse(sessionStorage.getItem("registerinfo"));
   console.log(tempInfo, "tempInfo");
-  // if (tempInfo && tempInfo.userName) {
-  //   Object.assign(registeCodeInfo, tempInfo);
-  //   formData.value.phone = registeCodeInfo.userName;
-  // } else {
-  //   message("手机号未找到，请返回注册页面重新注册", { type: "error" });
-  //   return router.push("/register");
-  // }
+  if (tempInfo && tempInfo.userName) {
+    Object.assign(registeCodeInfo, tempInfo);
+    formData.value.phone = registeCodeInfo.userName;
+  } else {
+    message("手机号未找到，请返回注册页面重新注册", { type: "error" });
+    return router.push("/register");
+  }
   getDesignerList();
   handleDicttData();
 });
