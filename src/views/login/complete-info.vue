@@ -45,7 +45,6 @@ const registeCodeInfo = reactive<RegisterInfo>({
 
 onMounted(() => {
   const tempInfo = JSON.parse(sessionStorage.getItem("registerinfo"));
-  console.log(tempInfo, "tempInfo");
   if (tempInfo && tempInfo.userName) {
     Object.assign(registeCodeInfo, tempInfo);
     formData.value.phone = registeCodeInfo.userName;
@@ -477,8 +476,7 @@ const rules = reactive({
                 </el-select>
               </el-form-item>
 
-              <!-- 全日薪资 -->
-              <el-form-item label="全日薪资(月)">
+              <!-- <el-form-item label="全日薪资(月)">
                 <el-input
                   v-model="formData.fullDaySalary"
                   type="number"
@@ -487,7 +485,6 @@ const rules = reactive({
                 />
               </el-form-item>
 
-              <!-- 半日薪资 -->
               <el-form-item label="半日薪资(月)">
                 <el-input
                   v-model="formData.halfDaySalary"
@@ -495,7 +492,7 @@ const rules = reactive({
                   type="number"
                   class="w-full"
                 />
-              </el-form-item>
+              </el-form-item> -->
             </div>
 
             <!-- 多选项目 -->
