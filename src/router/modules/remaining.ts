@@ -75,6 +75,15 @@ export default [
     component: () => import("@/views/phone/order.vue")
   },
   {
+    path: "/vip",
+    name: "VipPage",
+    meta: {
+      title: "VIP会员",
+      showLink: false
+    },
+    component: () => import("@/views/vip/index.vue")
+  },
+  {
     path: "/redirect",
     component: Layout,
     meta: {

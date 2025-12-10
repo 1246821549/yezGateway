@@ -114,7 +114,36 @@ export function resetRouter() {
 }
 
 /** 路由白名单 */
-const whiteList = ["/login", "/login/complete-info", "/index", "/orderList"];
+const whiteList = [
+  "/login",
+  "/login/complete-info",
+  "/index",
+  "/orderList",
+  "/orderDetail",
+  "/order/detail",
+  "/h5/orderDetial"
+];
+
+/**
+ * 检查路径是否在白名单中（支持动态路由参数）
+ * @param path 当前路径
+ * @returns 是否在白名单中
+ */
+function isInWhiteList(path: string): boolean {
+  // 精确匹配
+  if (whiteList.includes(path)) {
+    return true;
+  }
+
+  // 模糊匹配：检查路径是否以白名单中的某个路径开头
+  return whiteList.some(whitePath => {
+    // 处理带参数的路由，如 /order/detail/123 应该匹配 /order/detail
+    if (path.startsWith(whitePath + "/") || path === whitePath) {
+      return true;
+    }
+    return false;
+  });
+}
 
 const { VITE_HIDE_HOME } = import.meta.env;
 
@@ -245,7 +274,8 @@ router.beforeEach((to: ToRouteType, _from, next) => {
     }
   } else {
     if (to.path !== "/login") {
-      if (whiteList.indexOf(to.path) !== -1) {
+      // 使用新的白名单匹配逻辑，支持动态路由参数
+      if (isInWhiteList(to.path)) {
         next();
       } else {
         removeToken();

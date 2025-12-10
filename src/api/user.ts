@@ -1,4 +1,11 @@
 /**
+ * @Description: 文件描述
+ * @Author: 程前
+ * @Date: 2025-11-19 17:05:38
+ * @LastEditors: 程前
+ * @LastEditTime: 2025-12-09 16:13:27
+ */
+/**
  * @Author: 程前
  * @Date: 2025-07-14 17:06:00
  * @LastEditors: 程前
@@ -160,6 +167,7 @@ export type PageUserInfo = {
     msg_tz: number; // 通知消息（通知、公告）
     msg_jl: number; // 奖励通知（任务奖励、推荐奖励）
     msg_cw: number; // 账务消息（奖罚扣补）
+    userGrades: any[];
   };
 };
 

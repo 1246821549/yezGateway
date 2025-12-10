@@ -7,8 +7,11 @@
 -->
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
+import Cookies from "js-cookie";
+import { storageLocal } from "@pureadmin/utils";
+import { type DataInfo, userKey, multipleTabsKey } from "@/utils/auth";
 import TransparentNavbar from "@/components/TransparentNavbar/index.vue";
 import AppFooter from "@/components/AppFooter/index.vue";
 import FixedSideBar from "@/components/FixedSidebar/index.vue";
@@ -25,9 +28,18 @@ defineOptions({
 });
 
 const route = useRoute();
+const router = useRouter();
 const loading = ref(false);
 const grabLoading = ref(false);
 const orderDetail = ref<OrderDetailInfo | null>(null);
+
+/**
+ * 检查是否登录
+ */
+const isLoggedIn = computed(() => {
+  const userInfo = storageLocal().getItem<DataInfo<number>>(userKey);
+  return !!(Cookies.get(multipleTabsKey) && userInfo);
+});
 
 /**
  * 获取订单详情
@@ -109,6 +121,17 @@ const referPictureList = computed(() => {
  * 抢单
  */
 const handleGrabOrder = async () => {
+  // 1. 检查是否登录
+  if (!isLoggedIn.value) {
+    ElMessage.warning("请先登录后再抢单");
+    // 跳转到登录页，登录成功后返回当前页面
+    router.push({
+      path: "/login",
+      query: { redirect: route.fullPath }
+    });
+    return;
+  }
+
   if (!orderDetail.value) return;
 
   if (orderDetail.value.isSeize === 1) {
@@ -119,7 +142,7 @@ const handleGrabOrder = async () => {
   try {
     grabLoading.value = true;
 
-    // 1. 先检查是否可以抢单
+    // 2. 先检查是否可以抢单
     const checkRes = await checkSeizeOrder({ id: orderDetail.value.id });
     console.log("抢单检查返回:", checkRes);
 
@@ -131,7 +154,7 @@ const handleGrabOrder = async () => {
       return;
     }
 
-    // 2. 检查通过，正式抢单
+    // 3. 检查通过，正式抢单
     const seizeRes = await seizeOrder({ id: orderDetail.value.id });
     console.log("抢单返回:", seizeRes);
 

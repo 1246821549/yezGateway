@@ -26,6 +26,16 @@ export default {
         icon: "ri:home-office-line",
         showParent: false
       }
+    },
+    {
+      path: "/vip",
+      name: "VipPage",
+      component: () => import("@/views/vip/index.vue"),
+      meta: {
+        title: "VIP会员",
+        icon: "ri:vip-crown-line",
+        showParent: false
+      }
     }
   ]
 } satisfies RouteConfigsTable;
