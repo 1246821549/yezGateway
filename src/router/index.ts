@@ -165,8 +165,8 @@ router.beforeEach((to: ToRouteType, _from, next) => {
       next({ path: "/backend/index" });
       return;
     } else {
-      // 未登录，跳转到门户首页
-      next({ path: "/login" });
+      // 未登录，跳转到登录页，并带上当前页面路径
+      next({ path: "/login", query: { redirect: to.fullPath } });
       return;
     }
   }
@@ -279,7 +279,8 @@ router.beforeEach((to: ToRouteType, _from, next) => {
         next();
       } else {
         removeToken();
-        next({ path: "/login" });
+        // 跳转到登录页，并带上当前页面路径，以便登录后返回
+        next({ path: "/login", query: { redirect: to.fullPath } });
       }
     } else {
       next();

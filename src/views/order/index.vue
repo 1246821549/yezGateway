@@ -3,7 +3,7 @@
  * @Author: 程前
  * @Date: 2025-08-13 16:16:30
  * @LastEditors: 程前
- * @LastEditTime: 2025-12-09 11:32:33
+ * @LastEditTime: 2025-12-11 16:50:30
 -->
 <script setup lang="ts">
 import { ref, reactive, onMounted, computed } from "vue";
@@ -95,26 +95,7 @@ const fetchOrderList = async () => {
 
     console.log("订单列表返回数据:", res);
     if (res.code === 200) {
-      orderList.value = [
-        {
-          id: 0,
-          platName: "string", // 平台名称
-          orderTypeId: 123, // 订单类型id
-          orderTypeName: "string", // 订单类型名称
-          isDistribute: 123, // 是否派发
-          firstDraftTime: "string", // 初稿时间
-          finalTime: "string", // 终稿时间
-          demandIllustrate: "string", // 需求说明
-          referPicture: "string", // 参考图片
-          referWebsite: "string", // 参考网站
-          avatar: "string", // 客服头像
-          realName: "string", // 客服名称
-          createTime: "string", // 发布时间
-          taskAmount: 1, // 订单金额
-          isEmergent: 1 // 是否紧急
-        }
-      ];
-      console.log("订单列表:", orderList.value);
+      orderList.value = res.result.items || [];
       pagination.total = res.result.total || 0;
     } else {
       ElMessage.error(res.message || "获取订单列表失败");

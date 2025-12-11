@@ -219,7 +219,15 @@ const onLogin = async () => {
       setUserInfo(userInfo.result);
       // 清除服务能力弹窗标记，确保每次登录都会弹出
       sessionStorage.removeItem("hasShownServiceAbilityDialog");
-      router.push("/backend");
+
+      // 登录成功后跳转：优先跳转到 redirect 参数指定的页面，否则跳转到后台首页
+      const redirectPath = route.query.redirect as string;
+      if (redirectPath && redirectPath !== "/login") {
+        router.push(redirectPath);
+      } else {
+        router.push("/backend");
+      }
+
       message("登录成功", { type: "success" });
       loading.value = false;
     } else {

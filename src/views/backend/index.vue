@@ -736,6 +736,8 @@ const getData = async () => {
     Object.assign(userInfo, res.result);
     // 设置接单状态
     orderStatus.value = res.result.state_xx === 1;
+    // 判断是否显示审核中蒙层
+    showAuditOverlay.value = res.result.isState !== 1;
   }
   if (amountRes.code === 200) {
     Object.assign(userAmount, amountRes.result);
@@ -768,11 +770,8 @@ const currentUserGrade = computed(() => {
   return currentGrade || userInfo.userGrades[0];
 });
 
-// 是否显示审核中蒙层
-const showAuditOverlay = computed(() => {
-  return userInfo.isState !== 1;
-  // return false;
-});
+// 是否显示审核中蒙层 - 默认false，获取用户数据后再判断
+const showAuditOverlay = ref(false);
 
 // 转正条件配置
 const regularizationConditions = computed(() => {

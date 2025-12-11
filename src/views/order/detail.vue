@@ -3,7 +3,7 @@
  * @Author: 程前
  * @Date: 2025-10-30 10:22:15
  * @LastEditors: 程前
- * @LastEditTime: 2025-10-30 18:35:27
+ * @LastEditTime: 2025-12-11 16:37:31
 -->
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
@@ -48,7 +48,7 @@ const fetchOrderDetail = async () => {
   try {
     loading.value = true;
     const id = Number(route.params.id);
-    if (!id) {
+    if (!id && id !== 0) {
       ElMessage.error("订单ID不存在");
       return;
     }
@@ -115,6 +115,26 @@ const referPictureList = computed(() => {
     .split(",")
     .map(url => url.trim())
     .filter(url => url.length > 0);
+});
+
+/**
+ * 抢单按钮文本
+ */
+const grabButtonText = computed(() => {
+  if (!orderDetail.value) return "加载中...";
+  if (orderDetail.value.distributionState === 1) return "已派发";
+  if (orderDetail.value.isSeize === 1) return "已抢单";
+  return "我要抢单";
+});
+
+/**
+ * 抢单按钮是否禁用
+ */
+const isGrabDisabled = computed(() => {
+  if (!orderDetail.value) return true;
+  return (
+    orderDetail.value.distributionState === 1 || orderDetail.value.isSeize === 1
+  );
 });
 
 /**
@@ -307,18 +327,10 @@ onMounted(() => {
             type="primary"
             size="large"
             :loading="grabLoading"
-            :disabled="
-              orderDetail.isSeize === 1 || orderDetail.distributionState === 1
-            "
+            :disabled="isGrabDisabled"
             @click="handleGrabOrder"
           >
-            {{
-              grabLoading
-                ? "抢单中..."
-                : orderDetail.distributionState === 1
-                  ? "已派发"
-                  : "我要抢单"
-            }}
+            {{ grabLoading ? "抢单中..." : grabButtonText }}
           </el-button>
         </div>
       </el-card>
