@@ -698,12 +698,11 @@ onMounted(() => {
                     </el-icon>
                     <div class="flex space-x-2 ml-2">
                       <el-tag
-                        v-for="tag in getOrderTags(order)"
-                        :key="tag"
-                        :type="getTagType(tag)"
+                        v-show="order.tradeStateName"
+                        type="primary"
                         size="small"
                       >
-                        {{ tag }}
+                        {{ order.tradeStateName }}
                       </el-tag>
                     </div>
                   </div>
@@ -834,8 +833,14 @@ onMounted(() => {
                 </el-button>
                 <template #dropdown>
                   <el-dropdown-menu>
-                    <el-dropdown-item command="edit">初稿免责</el-dropdown-item>
-                    <el-dropdown-item command="cancel"
+                    <el-dropdown-item
+                      v-if="order.cg_YQ === '逾期'"
+                      command="edit"
+                      >初稿免责</el-dropdown-item
+                    >
+                    <el-dropdown-item
+                      v-if="order.zg_YQ === '逾期'"
+                      command="cancel"
                       >终稿免责</el-dropdown-item
                     >
                     <el-dropdown-item command="reassign"
