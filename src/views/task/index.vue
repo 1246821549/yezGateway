@@ -698,6 +698,14 @@ onMounted(() => {
                     </el-icon>
                     <div class="flex space-x-2 ml-2">
                       <el-tag
+                        v-for="tag in getOrderTags(order)"
+                        :key="tag"
+                        :type="getTagType(tag)"
+                        size="small"
+                      >
+                        {{ tag }}
+                      </el-tag>
+                      <el-tag
                         v-show="order.tradeStateName"
                         type="primary"
                         size="small"
