@@ -155,7 +155,7 @@ const getDesignerList = async () => {
  */
 const onChangeDesignerType = async (value: any) => {
   console.log("设计师类型变化", value);
-  const result = designerList.value.find((item: any) => item.code === value);
+  const result = designerList.value.find((item: any) => item.id === value);
   // 根据设计师类型id获取订单
   const skillOrders = await getOrderTypeList(result.id);
   options.skillOrders = skillOrders.result.map((item: any) => ({
