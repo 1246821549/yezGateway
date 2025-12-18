@@ -140,7 +140,7 @@ const getDesignerList = async () => {
       designerList.value = res.result;
       options.designerType = res.result.map((item: any) => ({
         label: item.name,
-        value: item.code
+        value: item.id
       }));
     } else {
       console.error("获取设计师类型失败", res.message);
