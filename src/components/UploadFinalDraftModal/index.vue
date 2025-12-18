@@ -13,6 +13,7 @@ import {
   getFinalDraftHistoryList,
   type HistoryDraftItem
 } from "@/api/order";
+import { log } from "node:console";
 
 interface Props {
   visible: boolean;
@@ -172,111 +173,133 @@ const uploadToOss = async (file: File): Promise<string> => {
 
 // 提交上传
 const handleSubmit = async () => {
-  if (mainImageList.value.length === 0) {
-    ElMessage.warning("请先选择要上传的主图");
-    return;
-  }
-
-  if (!sourceFile.value) {
-    ElMessage.warning("请上传源文件");
-    return;
-  }
-
-  // 如果是717订单，检查额外图片
-  if (needExtraImages.value) {
-    if (detailImageList.value.length === 0) {
-      ElMessage.warning("请上传终稿详情图");
+  if (props.orderDetail.finalUploadState === 1) {
+    try {
+      // 调用上传终稿接口
+      const uploadData: {
+        id: number;
+        imgPaths: string[];
+        zipPath: string;
+        detialPaths?: string[];
+        detialsPaths?: string[];
+      } = {
+        id: props.orderId,
+        imgPaths: [],
+        zipPath: ""
+      };
+      await uploadFinalDraft(uploadData as any);
+      ElMessage.success("上传终稿成功");
+      emit("success");
+      handleClose();
+    } catch (error) {
+      ElMessage.error(`提交失败:${error}`);
+    }
+  } else {
+    if (mainImageList.value.length === 0) {
+      ElMessage.warning("请先选择要上传的主图");
       return;
     }
-    if (sliceImageList.value.length === 0) {
-      ElMessage.warning("请上传终稿详情切片图");
+
+    if (!sourceFile.value) {
+      ElMessage.warning("请上传源文件");
       return;
     }
-  }
 
-  try {
-    uploading.value = true;
-    const mainImageUrls: string[] = [];
-    const detailImageUrls: string[] = [];
-    const sliceImageUrls: string[] = [];
-
-    // 上传主图
-    for (let i = 0; i < mainImageList.value.length; i++) {
-      const file = mainImageList.value[i];
-      try {
-        const url = await uploadToOss(file);
-        mainImageUrls.push(url);
-      } catch (error) {
-        ElMessage.error(`第${i + 1}张主图上传失败`);
+    // 如果是717订单，检查额外图片
+    if (needExtraImages.value) {
+      if (detailImageList.value.length === 0) {
+        ElMessage.warning("请上传终稿详情图");
+        return;
+      }
+      if (sliceImageList.value.length === 0) {
+        ElMessage.warning("请上传终稿详情切片图");
         return;
       }
     }
 
-    // 上传源文件
-    let sourceFileUrl = "";
     try {
-      sourceFileUrl = await uploadToOss(sourceFile.value);
+      uploading.value = true;
+      const mainImageUrls: string[] = [];
+      const detailImageUrls: string[] = [];
+      const sliceImageUrls: string[] = [];
+
+      // 上传主图
+      for (let i = 0; i < mainImageList.value.length; i++) {
+        const file = mainImageList.value[i];
+        try {
+          const url = await uploadToOss(file);
+          mainImageUrls.push(url);
+        } catch (error) {
+          ElMessage.error(`第${i + 1}张主图上传失败`);
+          return;
+        }
+      }
+
+      // 上传源文件
+      let sourceFileUrl = "";
+      try {
+        sourceFileUrl = await uploadToOss(sourceFile.value);
+      } catch (error) {
+        ElMessage.error("源文件上传失败");
+        return;
+      }
+
+      // 如果是717订单，上传额外图片
+      if (needExtraImages.value) {
+        // 上传终稿详情图
+        for (let i = 0; i < detailImageList.value.length; i++) {
+          const file = detailImageList.value[i];
+          try {
+            const url = await uploadToOss(file);
+            detailImageUrls.push(url);
+          } catch (error) {
+            ElMessage.error(`第${i + 1}张终稿详情图上传失败`);
+            return;
+          }
+        }
+
+        // 上传终稿详情切片图
+        for (let i = 0; i < sliceImageList.value.length; i++) {
+          const file = sliceImageList.value[i];
+          try {
+            const url = await uploadToOss(file);
+            sliceImageUrls.push(url);
+          } catch (error) {
+            ElMessage.error(`第${i + 1}张终稿详情切片图上传失败`);
+            return;
+          }
+        }
+      }
+
+      // 调用上传终稿接口
+      const uploadData: {
+        id: number;
+        imgPaths: string[];
+        zipPath: string;
+        detialPaths?: string[];
+        detialsPaths?: string[];
+      } = {
+        id: props.orderId,
+        imgPaths: mainImageUrls,
+        zipPath: sourceFileUrl
+      };
+
+      // 如果是717订单，添加额外图片
+      if (needExtraImages.value) {
+        uploadData.detialPaths = detailImageUrls;
+        uploadData.detialsPaths = sliceImageUrls;
+      }
+
+      await uploadFinalDraft(uploadData as any);
+      ElMessage.success("上传终稿成功");
+      emit("success");
+      handleClose();
     } catch (error) {
-      ElMessage.error("源文件上传失败");
-      return;
+      console.error("上传失败:", error);
+      ElMessage.error("上传失败，请重试");
+    } finally {
+      uploading.value = false;
     }
-
-    // 如果是717订单，上传额外图片
-    if (needExtraImages.value) {
-      // 上传终稿详情图
-      for (let i = 0; i < detailImageList.value.length; i++) {
-        const file = detailImageList.value[i];
-        try {
-          const url = await uploadToOss(file);
-          detailImageUrls.push(url);
-        } catch (error) {
-          ElMessage.error(`第${i + 1}张终稿详情图上传失败`);
-          return;
-        }
-      }
-
-      // 上传终稿详情切片图
-      for (let i = 0; i < sliceImageList.value.length; i++) {
-        const file = sliceImageList.value[i];
-        try {
-          const url = await uploadToOss(file);
-          sliceImageUrls.push(url);
-        } catch (error) {
-          ElMessage.error(`第${i + 1}张终稿详情切片图上传失败`);
-          return;
-        }
-      }
-    }
-
-    // 调用上传终稿接口
-    const uploadData: {
-      id: number;
-      imgPaths: string[];
-      zipPath: string;
-      detialPaths?: string[];
-      detialsPaths?: string[];
-    } = {
-      id: props.orderId,
-      imgPaths: mainImageUrls,
-      zipPath: sourceFileUrl
-    };
-
-    // 如果是717订单，添加额外图片
-    if (needExtraImages.value) {
-      uploadData.detialPaths = detailImageUrls;
-      uploadData.detialsPaths = sliceImageUrls;
-    }
-
-    await uploadFinalDraft(uploadData as any);
-
-    ElMessage.success("上传终稿成功");
-    emit("success");
-    handleClose();
-  } catch (error) {
-    console.error("上传失败:", error);
-    ElMessage.error("上传失败，请重试");
-  } finally {
-    uploading.value = false;
   }
 };
 

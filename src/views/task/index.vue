@@ -321,7 +321,6 @@ const fetchOrderListByStatus = async (status: string) => {
       statusStats.all = response.result.Data.items.length;
       statusStats.inProgress = response.result.zt_num;
       statusStats.abnormal = response.result.yc_num;
-      console.log(orderList.value);
     } else {
       ElMessage.error(response.message || "获取订单列表失败");
     }

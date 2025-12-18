@@ -127,44 +127,60 @@ const uploadToOss = async (file: File): Promise<string> => {
 
 // 提交上传
 const handleSubmit = async () => {
-  if (fileList.value.length === 0) {
-    ElMessage.warning("请先选择要上传的图片");
-    return;
-  }
-
-  try {
-    uploading.value = true;
-    const urls: string[] = [];
-
-    // 逐个上传文件
-    for (let i = 0; i < fileList.value.length; i++) {
-      const file = fileList.value[i];
-      try {
-        const url = await uploadToOss(file);
-        urls.push(url);
-        uploadedUrls.value[i] = url;
-      } catch (error) {
-        ElMessage.error(`第${i + 1}张图片上传失败`);
-        return;
-      }
+  if (props.orderDetail.firstDraftUploadState === 1) {
+    try {
+      // 调用上传初稿接口，传空图片路径表示删除初稿
+      const uploadData = {
+        id: props.orderId,
+        imgPaths: []
+      };
+      await uploadFirstDraft(uploadData);
+      ElMessage.success("上传初稿成功");
+      emit("success");
+      handleClose();
+    } catch (error) {
+      ElMessage.error(`提交失败:${error}`);
+    }
+  } else {
+    if (fileList.value.length === 0) {
+      ElMessage.warning("请先选择要上传的图片");
+      return;
     }
 
-    // 调用上传初稿接口
-    const uploadData = {
-      id: props.orderId,
-      imgPaths: urls
-    };
+    try {
+      uploading.value = true;
+      const urls: string[] = [];
 
-    await uploadFirstDraft(uploadData);
+      // 逐个上传文件
+      for (let i = 0; i < fileList.value.length; i++) {
+        const file = fileList.value[i];
+        try {
+          const url = await uploadToOss(file);
+          urls.push(url);
+          uploadedUrls.value[i] = url;
+        } catch (error) {
+          ElMessage.error(`第${i + 1}张图片上传失败`);
+          return;
+        }
+      }
 
-    ElMessage.success("上传初稿成功");
-    emit("success");
-    handleClose();
-  } catch (error) {
-    console.error("上传失败:", error);
-    ElMessage.error("上传失败，请重试");
-  } finally {
-    uploading.value = false;
+      // 调用上传初稿接口
+      const uploadData = {
+        id: props.orderId,
+        imgPaths: urls
+      };
+
+      await uploadFirstDraft(uploadData);
+
+      ElMessage.success("上传初稿成功");
+      emit("success");
+      handleClose();
+    } catch (error) {
+      console.error("上传失败:", error);
+      ElMessage.error("上传失败，请重试");
+    } finally {
+      uploading.value = false;
+    }
   }
 };
 
