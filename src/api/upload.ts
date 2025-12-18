@@ -6,12 +6,13 @@
  * @LastEditTime: 2025-08-14 11:25:34
  */
 import { http } from "@/utils/http";
+import { baseUrlApi } from "./utils";
 
 /**文件上传至阿里云oss */
 export const uploadFileToOss = (formData: FormData) => {
   return http.request<UploadFileToOssResponse>(
     "post",
-    "/api/ossFile/uploadFile",
+    baseUrlApi("ossFile/uploadFile"),
     {
       data: formData,
       headers: {
